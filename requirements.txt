@@ -1,3 +1,8 @@
+# MSG Viewer GUI and pdf convertor:
+PyQt6
+extract_msg
+
+# .msg to .eml convertor:
 compoundfiles
 compressed-rtf
 rtfparse # Python 3.9+ only
