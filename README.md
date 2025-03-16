@@ -10,7 +10,7 @@ View, export and convert .MSG email files without Outlook
 - Also now I am trying to use only PyQt6 lybrary to access and export the emails to PDF/HTML
 - The bellow is the first version of GUI app (no eml export) it is in: [extra-options/Gui-MSG-Viewer.py`](https://github.com/ghostersk/msg-viewer-with-eml-export/blob/primary/extra-options/Gui-MSG-Viewer.py)
 
-![image](https://github.com/user-attachments/assets/e21e84ad-0d60-40a1-806b-d94abc4a4d41)
+![image](https://github.com/user-attachments/assets/741af835-272e-4e19-ac96-eef4cca6ee0d)
 
 
 # Install
