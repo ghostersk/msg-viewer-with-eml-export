@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+# The code created by:
+# https://github.com/JoshData/convert-outlook-msg-file
 
 # This module converts a Microsoft Outlook .msg file into
 # a MIME message that can be loaded by most email programs
@@ -932,22 +934,111 @@ code_pages = {
   28605: "iso8859_15",
   65001: "utf-8",
 }
+"""
+Extra Functions: convert_msg_to_eml() and convert_all_msg_in_folder()
+- these cheks if files/folders exists or have correct extension
+- ready to be called
+"""
+def convert_msg_to_eml(msg_file, dest_folder=None, dest_file=None):
+    """ Added final function to save the email 
+    Testing:
+      msg_pt="emails/test1.msg"
+      dst_fold = "../msg-viewer/tests"
+      dst_file = "aaaatest.eml"
+      print(convert_msg_to_eml(msg_pt, dst_fold, dest_file=dst_file))
+    """
+    try:
+        file_name, dest_check = os.path.basename(msg_file).replace('.msg','.eml'), None
+        # Save to same location by default with .eml extension
+        save_to = os.path.abspath(os.path.join(os.path.dirname(msg_file), file_name))    
+        # get the message data for conversion.
+        msg_data = load(msg_file)
+        # Check if any other 
+        #print(save_to)
+        if dest_file != None:
+            if os.path.dirname(dest_file):
+                # Get only the folder path
+                folder_path = os.path.dirname(dest_file)
+                # Ensure the directory exists
+                os.makedirs(folder_path, exist_ok=True)
+                # ignores dest_folder, as it already has full path
+                dest_check = 1
+                dest_file += ".eml" if not dest_file.lower().endswith(".eml") else ""
+                save_to = os.path.abspath(dest_file)
+            # Check if the provided dest_file ends with .eml, if not ads it.
+            elif dest_file.lower().endswith(".eml"):
+                file_name = dest_file
+            else:
+                file_name = f"{dest_file}.eml"
+        # Checks if dest_folder was provided, or if file_name has full path.
+        if dest_folder != None and dest_check == None:
+            if not os.path.exists(dest_folder):
+                os.makedirs(dest_folder, exist_ok=True)
+            save_to = os.path.abspath(os.path.join(dest_folder, file_name))
+        elif dest_check == None and dest_file != None:
+            save_to = os.path.abspath(os.path.join(os.path.dirname(msg_file), file_name))
+        # Saves the message
+        with open(save_to, "wb") as f:
+            f.write(msg_data.as_bytes())
+            # returns file location, and 1 as success
+        return str(save_to), 1
+    except Exception as err:
+            # returns error detail and 0 as failure
+        return f"Error exporting {msg_file} - {err}", 0
+
+def convert_all_msg_in_folder(src_folder, dst_folder=None):
+    """
+    Allows exporting all .msg files in folder. Returns what was exported, and if any failed.
+    Testing:
+    print(convert_all_msg_in_folder('tests'))
+    sample output when failed:
+    (0, [], {'ERR': 'No MSG files found in: /home/user/Projects/msg-viewer/testsSSS'})
+    sample output when success:
+    (1, ['/home/user/Projects/msg-viewer/emails/The latest highlights.msg', '/home/user/Projects/msg-viewer/emails/test1.msg'], {})
+    """
+    msg_files = [] #files to be exported
+    errors = {} # failed exports
+    try:
+        src_folder = os.path.abspath(src_folder)
+        if dst_folder != None:        
+            os.makedirs(dst_folder, exist_ok=True)
+        else:
+            dst_folder = os.path.join(src_folder, 'exported_msgs')
+        dst_folder = os.path.abspath(dst_folder)
+
+        for root, _, files in os.walk(src_folder):
+            for file in files:
+                if file.lower().endswith(".msg"):
+                    msg_pth = os.path.abspath(os.path.join(root, file))
+                    msg_files.append(msg_pth)
+                    export = convert_msg_to_eml(msg_pth, dst_folder)
+                    if export[1] == 0:
+                        errors.update({msg_pth: export[0]})
+        if msg_files == []:
+            errors['ERR'] =  f"No MSG files found in: {src_folder}"
+            return 0, msg_files, errors
+        return 1, msg_files, errors 
+    except Exception as err:
+        errors['ERR'] =  f"Export failed: {err}"
+        return 0, msg_files, errors
 
 # COMMAND-LINE ENTRY POINT
+"""
+Uncomment the bellow section if you want to use the file directly from console
+"""
 
+# if __name__ == "__main__":
+#   # If no command-line arguments are given, convert the .msg
+#   # file on STDIN to .eml format on STDOUT.
+#   if len(sys.argv) <= 1:
+#     print(load(sys.stdin), file=sys.stdout)
 
-if __name__ == "__main__":
-  # If no command-line arguments are given, convert the .msg
-  # file on STDIN to .eml format on STDOUT.
-  if len(sys.argv) <= 1:
-    print(load(sys.stdin), file=sys.stdout)
-
-  # Otherwise, for each file mentioned on the command-line,
-  # convert it and save it to a file with ".eml" appended
-  # to the name.
-  else:
-    for fn in sys.argv[1:]:
-      print(fn + "...")
-      msg = load(fn)
-      with open(fn + ".eml", "wb") as f:
-        f.write(msg.as_bytes())
+#   # Otherwise, for each file mentioned on the command-line,
+#   # convert it and save it to a file with ".eml" appended
+#   # to the name.
+#   else:
+#     for fn in sys.argv[1:]:
+#       print(fn + "...")
+#       msg = load(fn)
+#       with open(fn + ".eml", "wb") as f:
+#         f.write(msg.as_bytes())
