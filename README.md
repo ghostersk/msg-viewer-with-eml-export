@@ -1,38 +1,41 @@
-Convert Outlook .msg Files to .eml (MIME format)
-================================================
+View, export and convert .MSG email files without Outlook
+=========================================================
+- tested on python 3.12.3
+- the source project is fork of [JoshData MSG convertor](https://github.com/JoshData/convert-outlook-msg-file)
+- the console option to export to .eml is for now commented out for a time.
+- it also using [TeamMsgExtractor](https://github.com/TeamMsgExtractor/msg-extractor) to view content of .msg
 
-This repository contains a Python 3.9+ module for
-reading Microsoft Outlook .msg files and converting
-them to .eml format, which is the standard MIME
-format for email messages.
-
-This project uses
-[compoundfiles](https://pypi.org/project/compoundfiles/)
-to navigate the .msg file structure,
-[compressed-rtf](https://pypi.org/project/compressed-rtf/)
-and [rtfparse](https://pypi.org/project/rtfparse/)
-to unpack HTML message bodies, and
-[html2text](https://pypi.org/project/html2text/) to
-back-fill plain text message bodies when only an HTML body
-is present.
+# Install
 
 Install the dependencies with:
 
     pip install -r requirements.txt
 
-(You may need to create and activate a Python virtual environment first.)
+## MSG-EML-Convertor.py use:
+```
+import msg-eml-convertor
+# to export one message:
+msg_file="emails/test1.msg" # only msg_file is required.
+dest_folder = "../msg-viewer/tests" # this is just file path (no file name)
+dest_file = "aaaatest.eml" # this can be just name or with path
 
-Then either convert a single file by piping:
+print(convert_msg_to_eml(msg_file, dest_folder, dest_file))
+# This returns string - new file location and 1 for success.
+# if it fails it returns string with error and 0 for fail
 
-	python outlookmsgfile.py < message.msg > message.eml
+# to export all msgs in folder:
+src_folder="tests" # this is where to look for .msg, including subfolders
+# if dst_folder missing, then it creates folder in src_folder/exported_msgs and saves it all there
+dst_folder # if provided will serve as export location ( is created if not exists)
 
-Or convert a set of files:
+print(convert_all_msg_in_folder(src_folder, dst_folder=None))
+# sample output when failed:
+(0, [], {'ERR': 'No MSG files found in: /home/user/Projects/msg-viewer/testsSSS'})
+# sample output when success:
+(1, ['/home/user/Projects/msg-viewer/emails/The latest highlights.msg', '/home/user/Projects/msg-viewer/emails/test1.msg'], {})
+```
 
-	python outlookmsgfile.py *.msg
-
-When passing filenames as command-line arguments, a new file with `.eml`
-appended to the filename is written out with the message in MIME format.
-
+## Original MSG convertor use:
 To use it in your application
 
     import outlookmsgfile
