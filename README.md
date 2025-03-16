@@ -1,7 +1,7 @@
 View, export and convert .MSG email files without Outlook
 =========================================================
 - tested on python 3.12.3
-- the source project is fork of [JoshData MSG convertor](https://github.com/JoshData/convert-outlook-msg-file)
+- the source project is fork of [JoshData MSG convertor](https://github.com/JoshData/convert-outlook-msg-file) - to convert .msg to .eml (yet to implement)
 - the console option to export to .eml is for now commented out for a time.
 - it also using [TeamMsgExtractor](https://github.com/TeamMsgExtractor/msg-extractor) to view content of .msg
 - I have PyQt6 application what can view (no export to eml) and save to pdf + export attachments using msg-extractor and PyQt6-Webview
