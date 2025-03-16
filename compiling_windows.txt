@@ -1,0 +1,44 @@
+pip install pyinstaller upx
+
+pyinstaller -F -w -i app_icon.ico run.py
+
+pyinstaller -F -w -i app_icon.ico --upx-dir PATH_TO_UPX run.py
+
+pyinstaller run.spec
+
+``` run.spec
+
+a = Analysis(
+    ['run.py'],
+    pathex=[],
+    binaries=[],
+    datas=[('app_icon.ico', '.')],  # Include the icon
+    hiddenimports=[],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=['PyQt6.QtBluetooth', 'PyQt6.QtMultimedia', 'PyQt6.QtNfc', 'PyQt6.QtSensors'],  # Exclude unused Qt modules
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='MSG-Viewer',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,  # Use UPX if available
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=False,  # No console
+    icon='app_icon.ico',
+)
+```
